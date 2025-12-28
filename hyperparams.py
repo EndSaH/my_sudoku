@@ -7,13 +7,13 @@ class Hyperparams:
     
     # model
     num_blocks = 20
-    num_filters = 512
+    num_filters = 256
     filter_size = 3
-    
+
     # training scheme
     lr = 0.001
     logdir = './logdir/with_resnet/'
     batch_size = 1024
-    num_epochs = 5
+    num_epochs = 20
 
-    result_fpath = './results/output_new_model_with_new_test.csv'
+    result_fpath = './results/output_new_model_with_new_test.txt'

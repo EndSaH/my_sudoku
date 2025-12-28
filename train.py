@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
+from torch.optim.lr_scheduler import CosineAnnealingLR
 from tqdm import tqdm
 import os
 
@@ -31,9 +32,11 @@ def train():
     
     # 优化器
     optimizer = optim.Adam(model.parameters(), lr=hp.lr)
-    scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=0.005, 
-                                          steps_per_epoch=len(train_loader), 
-                                          epochs=hp.num_epochs)
+    scheduler = CosineAnnealingLR( optimizer, T_max=hp.num_epochs, eta_min=1e-4
+)
+    # scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=0.002,
+    #                                       steps_per_epoch=len(train_loader), 
+    #                                       epochs=hp.num_epochs)
     
     # 损失函数：使用 reduction='none' 以便后续应用掩码
     criterion = nn.CrossEntropyLoss(reduction='none') 
@@ -63,6 +66,11 @@ def train():
             
             # 应用掩码并计算平均损失
             loss = (loss_map * istarget).sum() / (istarget.sum() + 1e-8)
+            # alpha = 0.2
+            # loss = (
+            #     loss_map * istarget +
+            #     alpha * loss_map * (1 - istarget)
+            # ).mean()
             
             # 反向传播
             optimizer.zero_grad()
